@@ -31,7 +31,7 @@
 //
 
 #include <Arduino.h>
-
+#include <TFT_eSPI.h>
 #include <esp_wifi.h>
 #include <esp_event_loop.h>
 #include <nvs_flash.h>
@@ -134,29 +134,15 @@ volatile ODID_UAS_Data    UAS_data;
 static const char        *title = "RID Scanner", *build_date = __DATE__,
                          *blank_latlong = " ---.------";
 
-#if (LCD_DISPLAY > 10) && (LCD_DISPLAY < 20) 
 
-#include <Wire.h>
 
-#include <U8x8lib.h>
-
-const int display_address = 0x78;
-
-#if LCD_DISPLAY == 11
-U8X8_SH1106_128X64_NONAME_HW_I2C u8x8(/* reset=*/ U8X8_PIN_NONE);
-#elif LCD_DISPLAY == 12
-U8X8_SSD1306_128X64_NONAME_HW_I2C u8x8(U8X8_PIN_NONE);
-#endif
-
-#endif
-
-#if TFT_DISPLAY
+//#if TFT_DISPLAY
 
 // For this library, the chip and pins are defined in User_Setup.h.
 // Which is pretty horrible.
 
-#include <TFT_eSPI.h>
-#include <SPI.h>
+
+#include <SPI.h>//xyz xxx ???
 
 TFT_eSPI tft = TFT_eSPI();
 #define TFT_GREY 0x5AEB // New colour
@@ -164,7 +150,7 @@ TFT_eSPI tft = TFT_eSPI();
 static uint16_t *pixel_timestamp = NULL;
 static uint32_t  track_colours[MAX_UAVS + 1];
 
-#endif
+//#endif
 
 #if BLE_SCAN
 
@@ -342,43 +328,16 @@ void setup() {
 
 #endif
 
-#if LCD_DISPLAY > 10
 
-#if LCD_DISPLAY < 20
-  u8x8.setI2CAddress(display_address);
-#endif
 
-  u8x8.begin();
-  u8x8.setPowerSave(0);
-
-  u8x8.setFont(u8x8_font_chroma48medium8_r);
- 
-  u8x8.refreshDisplay();
-
-  u8x8.drawString( 3,0,(char *) title);
-  u8x8.drawString( 3,1,(char *) build_date);
-  u8x8.drawString( 1,2,"lat.");
-  u8x8.drawString(13,2,"msl");
-  u8x8.drawString( 1,3,"long.");
-  u8x8.drawString(13,3,"agl");
-  u8x8.drawString( 1,4,"base lat.");
-  u8x8.drawString(13,4,"m/s");
-  u8x8.drawString( 1,5,"base long.");
-  u8x8.drawString(13,5,"deg");
-  u8x8.drawString( 0,6,"ODID    heap");
-  u8x8.drawString( 0,7,"French  stack");
-
-#else
-  blank_latlong;
-#endif
-
-#if TFT_DISPLAY
+//#if TFT_DISPLAY
 
   tft.init();
   //tft.setRotation(0);
-  tft.fillScreen(TFT_BLACK);
   tft.setRotation(1);
-  // Set "cursor" at top left corner of display (0,0) and select font 2
+  tft.fillScreen(TFT_RED);
+  sleep(10)
+;  // Set "cursor" at top left corner of display (0,0) and select font 2
   // (cursor will move to next line automatically during printing with 'tft.println'
   //  or stay on the line is there is room for the text with tft.print)
   tft.setCursor(10, 10, 2);
@@ -411,7 +370,7 @@ void setup() {
     //tft.drawLine(4,y,10,y,track_colours[i]);
   }
 
-#endif
+//#endif
 
 #if 0
 
@@ -553,7 +512,7 @@ void loop() {
 
         if ((y >= 0)&&(y < TFT_HEIGHT)&&(x >= 0)&&(x < TFT_WIDTH)) {
 
-          tft.drawPixel(x,y,track_colours[i]);
+          //tft.drawPixel(x,y,track_colours[i]);
 
           if (pixel_timestamp) {
             
