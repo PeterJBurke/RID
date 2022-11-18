@@ -333,17 +333,10 @@ void setup() {
 //#if TFT_DISPLAY
 
   tft.init();
-  //tft.setRotation(0);
   tft.setRotation(1);
-  tft.fillScreen(TFT_RED);
-  sleep(10)
-;  // Set "cursor" at top left corner of display (0,0) and select font 2
-  // (cursor will move to next line automatically during printing with 'tft.println'
-  //  or stay on the line is there is room for the text with tft.print)
+  tft.fillScreen(TFT_BLACK);
   tft.setCursor(10, 10, 2);
-  // Set the font colour to be white with a black background, set text size multiplier to 1
   tft.setTextColor(TFT_WHITE,TFT_BLACK);  tft.setTextSize(2);
-  // We can now plot text on screen using the "print" class
   tft.println("Hello RID");
   if ((pixel_timestamp = (uint16_t *) calloc(TFT_WIDTH * TFT_HEIGHT,sizeof(uint16_t))) == NULL) {
 
