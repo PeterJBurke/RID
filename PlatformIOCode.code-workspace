@@ -1,0 +1,24 @@
+{
+	"folders": [
+		{
+			"path": "../PlatformIOCode"
+		},
+		{
+			"name": "RID",
+			"path": "."
+		},
+		{
+			"name": "RIDM5",
+			"path": "../RIDM5"
+		},
+		{
+			"name": "TTGOTFTExample",
+			"path": "../../PlatformIO/Projects/TTGOTFTExample"
+		},
+		{
+			"name": "Game",
+			"path": "../../PlatformIO/Projects/Game"
+		}
+	],
+	"settings": {}
+}
