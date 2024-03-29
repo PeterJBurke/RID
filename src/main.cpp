@@ -171,6 +171,8 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
       ODID_Location_data    odid_location;
       ODID_System_data      odid_system;
       ODID_OperatorID_data  odid_operator;
+      
+      // Serial.printf("BLEAdvertisedDeviceCallbacks called at millis= %u \n",millis());
 
       text[0] = i = k = 0;
       
@@ -180,11 +182,26 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
 
         BLEAddress ble_address = device.getAddress();
         mac                    = (uint8_t *) ble_address.getNative();
+        std::string my_string;
+        my_string=ble_address.toString();
+        //String to_print="ble_address=  \n"+my_string.c_str()+"\"n";
+        //Serial.printf(to_print);
+        String to_print = "ble_address=  " + String(my_string.c_str()) ;
+        //String ble_address_string=ble_address.toString();
+        //Serial.printf(ble_address_string);
 
 //      BLEUUID BLE_UUID = device.getServiceUUID(); // crashes program
 
         payload = device.getPayload();
         odid    = &payload[6];
+        int payload_length=device.getPayloadLength();
+
+
+        String to_print_2 ="T="+ String(millis())+ " length = " +String(payload_length) + " ble_address=  " + String(my_string.c_str())+" RSSI = " + String(device.getRSSI()) + "\n" ;
+        Serial.printf("%s", to_print_2.c_str());
+
+
+
 #if 0
         for (i = 0, k = 0; i < ESP_BD_ADDR_LEN; ++i, k += 3) {
 
@@ -206,17 +223,29 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
           UAV->rssi      = device.getRSSI();
           UAV->flag      = 1;
 
+
           memcpy(UAV->mac,mac,6);
+          to_print=to_print_2;
+          String to_print_basic = "basic "+ to_print + "\n";
+          String to_print_location = "location "+ to_print+ "\n";
+          String to_print_system = "system "+ to_print+ "\n";
+          String to_print_operator = "operator "+ to_print+ "\n";
+
 
           switch (odid[0] & 0xf0) {
 
           case 0x00: // basic
+            //Serial.printf("BLEAdvertisedDeviceCallbacks case = basic \n");
+            Serial.printf("%s", to_print_basic.c_str());
 
             decodeBasicIDMessage(&odid_basic,(ODID_BasicID_encoded *) odid);
             break;
 
           case 0x10: // location
-          
+            //Serial.printf("BLEAdvertisedDeviceCallbacks case = location \n");
+            Serial.printf("%s", to_print_location.c_str());
+
+
             decodeLocationMessage(&odid_location,(ODID_Location_encoded *) odid);
             UAV->lat_d        = odid_location.Latitude;
             UAV->long_d       = odid_location.Longitude;
@@ -227,14 +256,19 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
             break;
 
           case 0x40: // system
+            //Serial.printf("BLEAdvertisedDeviceCallbacks case = system \n");
 
+
+            Serial.printf("%s", to_print_system.c_str());
             decodeSystemMessage(&odid_system,(ODID_System_encoded *) odid);
             UAV->base_lat_d   = odid_system.OperatorLatitude;
             UAV->base_long_d  = odid_system.OperatorLongitude;
             break;
 
           case 0x50: // operator
+            //Serial.printf("BLEAdvertisedDeviceCallbacks case = operator \n");
 
+            Serial.printf("%s", to_print_operator.c_str());
             decodeOperatorIDMessage(&odid_operator,(ODID_OperatorID_encoded *) odid);
             strncpy((char *) UAV->op_id,(char *) odid_operator.OperatorId,ODID_ID_SIZE);
             break;
@@ -431,8 +465,9 @@ void loop() {
   text[0] = i = j = k = 0;
 
   //
-  
+
   msecs = millis();
+  //Serial.printf("loop called at %u \n",msecs);
 
 #if BLE_SCAN
 
@@ -471,7 +506,7 @@ void loop() {
 
     if (uavs[i].flag) {
 #if TFT_DISPLAY
-      print_json(i,secs,(id_data *) &uavs[i]);
+      // xxxxxx print_json(i,secs,(id_data *) &uavs[i]);
       // XXX UAV present!
       // print lat, lon to screen
       tft.setTextColor(TFT_WHITE,TFT_BLACK);  tft.setTextSize(2);
