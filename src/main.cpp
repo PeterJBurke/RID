@@ -118,6 +118,9 @@ static void               dump_frame(uint8_t *,int);
 static void               calc_m_per_deg(double,double,double *,double *);
 static char              *format_op_id(char *);
 
+
+static void               printPayloadHex(uint8_t *payload, size_t len);
+
 static double             base_lat_d = 0.0, base_long_d = 0.0, m_deg_lat = 110000.0, m_deg_long = 110000.0;
 #if SD_LOGGER
 static struct id_log      logfiles[MAX_UAVS + 1];
@@ -198,7 +201,9 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
 
 
         String to_print_2 ="T="+ String(millis())+ " length = " +String(payload_length) + " ble_address=  " + String(my_string.c_str())+" RSSI = " + String(device.getRSSI()) + "\n" ;
-        Serial.printf("%s", to_print_2.c_str());
+        // Serial.printf("%s", to_print_2.c_str());
+        // printPayloadHex(payload,  len);
+
 
 
 
@@ -237,6 +242,8 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
           case 0x00: // basic
             //Serial.printf("BLEAdvertisedDeviceCallbacks case = basic \n");
             Serial.printf("%s", to_print_basic.c_str());
+            printPayloadHex(payload,  len);
+
 
             decodeBasicIDMessage(&odid_basic,(ODID_BasicID_encoded *) odid);
             break;
@@ -244,6 +251,7 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
           case 0x10: // location
             //Serial.printf("BLEAdvertisedDeviceCallbacks case = location \n");
             Serial.printf("%s", to_print_location.c_str());
+            printPayloadHex(payload,  len);
 
 
             decodeLocationMessage(&odid_location,(ODID_Location_encoded *) odid);
@@ -260,6 +268,8 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
 
 
             Serial.printf("%s", to_print_system.c_str());
+            printPayloadHex(payload,  len);
+
             decodeSystemMessage(&odid_system,(ODID_System_encoded *) odid);
             UAV->base_lat_d   = odid_system.OperatorLatitude;
             UAV->base_long_d  = odid_system.OperatorLongitude;
@@ -269,6 +279,8 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
             //Serial.printf("BLEAdvertisedDeviceCallbacks case = operator \n");
 
             Serial.printf("%s", to_print_operator.c_str());
+            printPayloadHex(payload,  len);
+
             decodeOperatorIDMessage(&odid_operator,(ODID_OperatorID_encoded *) odid);
             strncpy((char *) UAV->op_id,(char *) odid_operator.OperatorId,ODID_ID_SIZE);
             break;
@@ -477,7 +489,7 @@ void loop() {
 
     last_ble_scan = msecs;
   
-    BLEScanResults foundDevices = BLE_scan->start(1,false);
+    BLEScanResults foundDevices = BLE_scan->start(5,false);
 
     BLE_scan->clearResults(); 
   }
@@ -1068,6 +1080,7 @@ struct id_data *next_uav(uint8_t *mac) {
  */
 
 void parse_odid(struct id_data *UAV,ODID_UAS_Data *UAS_data2) {
+  Serial.print("parse_odid called");
 
   if (UAS_data2->BasicIDValid[0]) {
 
@@ -1343,7 +1356,14 @@ char *format_op_id(char *op_id) {
   return short_id;
 }
 
-
+void printPayloadHex(uint8_t *payload, size_t len) {
+    for (size_t i = 0; i < len; i++) {
+        Serial.printf("%02X ", payload[i]);
+    }
+    Serial.println(); // Print a newline at the end
+    Serial.println(); // Print a newline at the end
+    Serial.println(); // Print a newline at the end
+}
 /*
  *
  */ 
