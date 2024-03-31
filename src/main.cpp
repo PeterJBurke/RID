@@ -241,8 +241,8 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
 
           case 0x00: // basic
             //Serial.printf("BLEAdvertisedDeviceCallbacks case = basic \n");
-            Serial.printf("%s", to_print_basic.c_str());
-            printPayloadHex(payload,  len);
+            //Serial.printf("%s", to_print_basic.c_str());
+            //printPayloadHex(payload,  len);
 
 
             decodeBasicIDMessage(&odid_basic,(ODID_BasicID_encoded *) odid);
@@ -250,8 +250,8 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
 
           case 0x10: // location
             //Serial.printf("BLEAdvertisedDeviceCallbacks case = location \n");
-            Serial.printf("%s", to_print_location.c_str());
-            printPayloadHex(payload,  len);
+            //Serial.printf("%s", to_print_location.c_str());
+            //printPayloadHex(payload,  len);
 
 
             decodeLocationMessage(&odid_location,(ODID_Location_encoded *) odid);
@@ -261,14 +261,17 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
             UAV->height_agl   = (int) odid_location.Height;
             UAV->speed        = (int) odid_location.SpeedHorizontal;
             UAV->heading      = (int) odid_location.Direction;
+            Serial.printf("Lat,lon = (%f,%f) \n", odid_location.Latitude,odid_location.Longitude);
+            //Serial.printf("Lat,lon = (%f,%f) \n", odid_location.Latitude, odid_location.Longitude);
+
             break;
 
           case 0x40: // system
             //Serial.printf("BLEAdvertisedDeviceCallbacks case = system \n");
 
 
-            Serial.printf("%s", to_print_system.c_str());
-            printPayloadHex(payload,  len);
+            //Serial.printf("%s", to_print_system.c_str());
+            //printPayloadHex(payload,  len);
 
             decodeSystemMessage(&odid_system,(ODID_System_encoded *) odid);
             UAV->base_lat_d   = odid_system.OperatorLatitude;
@@ -278,8 +281,8 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
           case 0x50: // operator
             //Serial.printf("BLEAdvertisedDeviceCallbacks case = operator \n");
 
-            Serial.printf("%s", to_print_operator.c_str());
-            printPayloadHex(payload,  len);
+            //Serial.printf("%s", to_print_operator.c_str());
+            //printPayloadHex(payload,  len);
 
             decodeOperatorIDMessage(&odid_operator,(ODID_OperatorID_encoded *) odid);
             strncpy((char *) UAV->op_id,(char *) odid_operator.OperatorId,ODID_ID_SIZE);
@@ -502,9 +505,9 @@ void loop() {
     BLEScanResults foundDevices = BLE_scan->start(1,false);
 
     BLE_scan->clearResults(); 
-    Serial.printf("--------------------------------------------------------- \n");
-    print_json(MAX_UAVS,msecs / 1000,(id_data *) &uavs[MAX_UAVS]); 
-    Serial.printf("--------------------------------------------------------- \n");
+    //Serial.printf("--------------------------------------------------------- \n");
+    //print_json(MAX_UAVS,msecs / 1000,(id_data *) &uavs[MAX_UAVS]); 
+    // Serial.printf("--------------------------------------------------------- \n");
 
   }
   
