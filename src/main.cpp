@@ -53,7 +53,7 @@
 #define LCD_DISPLAY        0 // 11 for a SH1106 128X64 OLED.
 #define DISPLAY_PAGE_MS 4000
 
-#define TFT_DISPLAY        0
+#define TFT_DISPLAY        1
 #define TFT_WIDTH        128
 #define TFT_HEIGHT       160
 #define TRACK_SCALE      1.0 // m/pixel
@@ -261,8 +261,7 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
             UAV->height_agl   = (int) odid_location.Height;
             UAV->speed        = (int) odid_location.SpeedHorizontal;
             UAV->heading      = (int) odid_location.Direction;
-            Serial.printf("Lat,lon = (%f,%f) \n", odid_location.Latitude,odid_location.Longitude);
-            //Serial.printf("Lat,lon = (%f,%f) \n", odid_location.Latitude, odid_location.Longitude);
+            //Serial.printf("Lat,lon = (%f,%f) \n", odid_location.Latitude,odid_location.Longitude);
 
             break;
 
@@ -534,6 +533,8 @@ void loop() {
     }
 
     if (uavs[i].flag) {
+      print_json(i,secs,(id_data *) &uavs[i]);
+      uavs[i].flag=0;
 #if TFT_DISPLAY
       // xxxxxx print_json(i,secs,(id_data *) &uavs[i]);
       // XXX UAV present!
