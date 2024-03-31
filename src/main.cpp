@@ -53,7 +53,7 @@
 #define LCD_DISPLAY        0 // 11 for a SH1106 128X64 OLED.
 #define DISPLAY_PAGE_MS 4000
 
-#define TFT_DISPLAY        1
+#define TFT_DISPLAY        0
 #define TFT_WIDTH        128
 #define TFT_HEIGHT       160
 #define TRACK_SCALE      1.0 // m/pixel
@@ -139,7 +139,7 @@ static const char        *title = "RID Scanner", *build_date = __DATE__,
 
 
 
-//#if TFT_DISPLAY
+#if TFT_DISPLAY
 
 // For this library, the chip and pins are defined in User_Setup.h.
 // Which is pretty horrible.
@@ -153,7 +153,7 @@ TFT_eSPI tft = TFT_eSPI();
 static uint16_t *pixel_timestamp = NULL;
 static uint32_t  track_colours[MAX_UAVS + 1];
 
-//#endif
+#endif
 
 #if BLE_SCAN
 
@@ -200,9 +200,9 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
         int payload_length=device.getPayloadLength();
 
 
-        String to_print_2 ="T="+ String(millis())+ " length = " +String(payload_length) + " ble_address=  " + String(my_string.c_str())+" RSSI = " + String(device.getRSSI()) + "\n" ;
-        // Serial.printf("%s", to_print_2.c_str());
-        // printPayloadHex(payload,  len);
+        String to_print_2 ="T="+ String(millis())+ " length = " +String(payload_length) + " ble_address=  " + String(my_string.c_str())+" RSSI = " + String(device.getRSSI())  ;
+        //Serial.printf("%s", to_print_2.c_str());
+        //printPayloadHex(payload,  len);
 
 
 
@@ -367,16 +367,26 @@ void setup() {
   service_uuid = BLEUUID("0000fffa-0000-1000-8000-00805f9b34fb");
   BLE_scan     = BLEDevice::getScan();
 
-  BLE_scan->setAdvertisedDeviceCallbacks(new MyAdvertisedDeviceCallbacks());
+  BLE_scan->setAdvertisedDeviceCallbacks(new MyAdvertisedDeviceCallbacks(),true);
   BLE_scan->setActiveScan(true); 
   BLE_scan->setInterval(100);
   BLE_scan->setWindow(99);  
+
+
+   //BLE_scan->m_scan_params.scan_duplicate=BLE_SCAN_DUPLICATE_DISABLE; // can't access directly, it's private
+   //esp_ble_ext_scan_params_t *RID_params;
+   //RID_params->scan_duplicate=BLE_SCAN_DUPLICATE_DISABLE;
+   //BLE_scan->setExtScanParams(RID_params);
+   //BLE_scan->clearResults;
+
+
+   
 
 #endif
 
 
 
-//#if TFT_DISPLAY
+#if TFT_DISPLAY
 
   tft.init();
   tft.setRotation(1);
@@ -409,7 +419,7 @@ void setup() {
     //tft.drawLine(4,y,10,y,track_colours[i]);
   }
 
-//#endif
+#endif
 
 #if 0
 
@@ -489,9 +499,13 @@ void loop() {
 
     last_ble_scan = msecs;
   
-    BLEScanResults foundDevices = BLE_scan->start(5,false);
+    BLEScanResults foundDevices = BLE_scan->start(1,false);
 
     BLE_scan->clearResults(); 
+    Serial.printf("--------------------------------------------------------- \n");
+    print_json(MAX_UAVS,msecs / 1000,(id_data *) &uavs[MAX_UAVS]); 
+    Serial.printf("--------------------------------------------------------- \n");
+
   }
   
 #endif
@@ -1360,8 +1374,6 @@ void printPayloadHex(uint8_t *payload, size_t len) {
     for (size_t i = 0; i < len; i++) {
         Serial.printf("%02X ", payload[i]);
     }
-    Serial.println(); // Print a newline at the end
-    Serial.println(); // Print a newline at the end
     Serial.println(); // Print a newline at the end
 }
 /*
